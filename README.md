@@ -56,6 +56,17 @@ npm run dev          # http://localhost:3000
 ## สิ่งที่ยังต้องขอจากเจ้าของระบบ
 
 1. ซอร์สโค้ด PHP ทั้งหมด (zip แล้วส่งมา หรือ commit เข้า repo นี้) — FTP เข้าไม่ได้จากสภาพแวดล้อมที่ผมทำงาน
+   ดู [`docs/php-source-intake.md`](docs/php-source-intake.md)
+
+## ตรวจซอร์สอัตโนมัติ
+
+```bash
+node tools/inspect-php-source.mjs incoming/php-source --out docs/php-source-report.md
+```
+
+สร้างรายงาน: entry point ที่ต้องแปลงเป็น route, ตาราง/คอลัมน์ที่อ้างถึง,
+จุดใช้ `$_SESSION`, วิธีแฮชรหัสผ่าน, SQL ที่ต่อสตริง (เสี่ยง injection),
+จุดอัปโหลด/อีเมล/PDF/LINE, ฟอร์มที่ต้องแปลงเป็น Server Action และไฟล์ที่มี credential
 2. `mysqldump --no-data` ของฐานข้อมูลเดิม
 3. ไฟล์ config ที่ปิดรหัสผ่านแล้ว (ดูชื่อ DB/timezone/path อัปโหลด)
 4. รายการ cron และโฮสติ้งที่จะใช้ (VPS + Nginx หรือ Vercel)

@@ -1,0 +1,12 @@
+# ซอร์ส/ดัมป์ที่รับเข้ามาเพื่อตรวจ (อย่า commit ข้อมูลลูกค้าจริง)
+/incoming/
+*.zip
+*.sql
+*.sql.gz
+
+# ไฟล์รายงานที่สร้างใหม่ (ให้ commit เมื่อสรุปแล้วเท่านั้น)
+# docs/php-source-report.md
+
+node_modules/
+.next/
+.DS_Store
