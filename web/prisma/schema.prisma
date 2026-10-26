@@ -1,0 +1,30 @@
+// Prisma schema — จุดเชื่อมต่อ "ฐานข้อมูลเดิม" ของระบบ PHP
+//
+// ขั้นตอนจริง (เมื่อได้ดัมป์ฐานข้อมูล):
+//   1) ตั้ง DATABASE_URL ใน .env ให้ชี้ไปที่ MySQL เดิม (อ่านอย่างเดียวก็ได้)
+//   2) npx prisma db pull     -> ดึงโครงสร้างจริงมาเป็น models (ไม่แก้ข้อมูล)
+//   3) npx prisma generate    -> สร้าง client ให้ TypeScript ใช้งาน
+//
+// ด้านล่างนี้เป็น "ตัวอย่าง" เท่านั้น เพื่อให้โปรเจกต์คอมไพล์ผ่านก่อนเชื่อมต่อ
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String   @db.VarChar(150)
+  email        String   @unique @db.VarChar(190)
+  passwordHash String   @map("password_hash") @db.VarChar(255)
+  role         String   @default("staff") @db.VarChar(20)
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
