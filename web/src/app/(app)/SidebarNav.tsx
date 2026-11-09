@@ -7,12 +7,55 @@ type Item = { href: string; label: string; badge?: string; icon: string };
 
 const NAV: { section: string; items: Item[] }[] = [
   {
-    section: "ภาพรวม",
+    section: "Cockpit",
     items: [
       {
         href: "/dashboard",
-        label: "แดชบอร์ด",
+        label: "แดชบอร์ดกลาง",
         icon: "M3 12h4l3-7 4 14 3-7h4",
+      },
+      {
+        href: "/service",
+        label: "ศูนย์บริการ (จอง/งาน)",
+        icon: "M14.7 6.3a4.5 4.5 0 1 0-6.4 6.4L3 18l3 3 5.3-5.3a4.5 4.5 0 0 0 6.4-6.4l-2.8 2.8-2.1-2.1 2.9-3.7z",
+      },
+      {
+        href: "/chat",
+        label: "AI ตอบแชท",
+        badge: "AI",
+        icon: "M4 5h16v10H9l-5 4V5zM8 9h8M8 12h5",
+      },
+    ],
+  },
+  {
+    section: "CRM & การขาย",
+    items: [
+      {
+        href: "/customers",
+        label: "ลูกค้า (CRM)",
+        icon: "M16 19v-1a4 4 0 0 0-8 0v1M12 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z",
+      },
+      {
+        href: "/products",
+        label: "สินค้า & บริการ",
+        icon: "M4 8l8-4 8 4v8l-8 4-8-4V8zM4 8l8 4m0 0l8-4m-8 4v8",
+      },
+      {
+        href: "/promotions",
+        label: "โปรโมชันรายเดือน",
+        badge: "รายเดือน",
+        icon: "M12 4l1.8 4.6L18 10.4l-4.2 1.8L12 17l-1.8-4.8L6 10.4l4.2-1.8L12 4zM19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15z",
+      },
+    ],
+  },
+  {
+    section: "ช่องทางเผยแพร่",
+    items: [
+      {
+        href: "/publish",
+        label: "เผยแพร่ทุกช่องทาง",
+        badge: "Hub",
+        icon: "M12 3v10m0 0l-3.5-3.5M12 13l3.5-3.5M4 15v4h16v-4M7 19l5 2 5-2",
       },
       {
         href: "/line-rich-menu",
@@ -27,7 +70,7 @@ const NAV: { section: string; items: Item[] }[] = [
     items: [
       {
         href: "/plan",
-        label: "แผนย้ายระบบ PHP → Next.js",
+        label: "แผนย้าย PHP → Next.js",
         icon: "M8 4h8l4 4v12H4V4h4zM8 12h8M8 16h5",
       },
     ],
@@ -38,7 +81,7 @@ export default function SidebarNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="space-y-6">
+    <nav className="space-y-5">
       {NAV.map((group) => (
         <div key={group.section}>
           <p className="mb-2 px-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/35">
