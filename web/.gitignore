@@ -42,3 +42,6 @@ next-env.d.ts
 
 # allow the example env file
 !.env.example
+
+# runtime demo data (สร้างอัตโนมัติจาก seed.ts)
+data/store.json
