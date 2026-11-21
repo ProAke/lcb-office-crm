@@ -19,8 +19,11 @@ export type SessionUser = {
 };
 
 function secretKey() {
-  const secret =
-    process.env.AUTH_SECRET ?? "dev-only-secret-please-change-in-production-32";
+  const configured = process.env.AUTH_SECRET;
+  if (process.env.NODE_ENV === "production" && (!configured || configured.length < 32 || configured === "change-me-to-a-random-32-byte-string" || configured === "dev-only-secret-please-change-in-production-32")) {
+    throw new Error("AUTH_SECRET ต้องเป็นค่าลับที่ปลอดภัยอย่างน้อย 32 ตัวอักษรใน production");
+  }
+  const secret = configured ?? "dev-only-secret-please-change-in-production-32";
   return new TextEncoder().encode(secret);
 }
 

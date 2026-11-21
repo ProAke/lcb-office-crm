@@ -5,7 +5,7 @@ import { loginAction, type LoginState } from "./actions";
 
 const initialState: LoginState = {};
 
-export default function LoginForm() {
+export default function LoginForm({ demo }: { demo: boolean }) {
   const [state, formAction, pending] = useActionState(loginAction, initialState);
 
   return (
@@ -19,7 +19,7 @@ export default function LoginForm() {
           name="email"
           type="text"
           autoComplete="username"
-          defaultValue="admin"
+          defaultValue={demo ? "admin" : ""}
           placeholder="name@company.co.th"
           className="input"
           required
@@ -44,7 +44,7 @@ export default function LoginForm() {
           name="password"
           type="password"
           autoComplete="current-password"
-          defaultValue="admin"
+          defaultValue={demo ? "admin" : ""}
           placeholder="••••••••"
           className="input"
           required
@@ -64,9 +64,9 @@ export default function LoginForm() {
         {pending ? "กำลังตรวจสอบ…" : "เข้าสู่ระบบ"}
       </button>
 
-      <p className="text-center text-xs text-muted">
+      {demo && <p className="text-center text-xs text-muted">
         เดโม: <span className="font-medium text-ink">admin / admin</span>
-      </p>
+      </p>}
     </form>
   );
 }

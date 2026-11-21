@@ -28,9 +28,15 @@ npm run dev          # http://localhost:3000
 # เดโม: admin / admin
 ```
 
-## อัปเดต 2026-11-09 — CRM + ERP เต็มระบบ (Next.js)
+## สถานะและการเตรียม Deploy
 
-พัฒนาต่อจากโครงจนครบวงจรธุรกิจร้านยางแล้ว (อ่านรายละเอียดใน `web/README.md`):
+ระบบปัจจุบันเป็น **ต้นแบบ** ยังไม่พร้อมเปิดให้ใช้งานจริง: ข้อมูล CRM ใช้ JSON เดโม ไม่ได้เชื่อม MySQL เดิมเพียงเพราะตั้ง `DATABASE_URL`; การยืนยันตัวตนจริงยังไม่ได้ทำ; metrics เป็นข้อมูลจำลอง และ LINE/Facebook ยังต้องทดสอบกับบัญชีจริง ห้ามนำไปใช้กับข้อมูลลูกค้าจริงหรือเชื่อมช่องทางจริงก่อนแก้ประเด็นในรายงาน
+
+รายงานการตรวจสอบ รายการงานค้าง และขั้นตอนเตรียม deployment สำหรับ `https://app.laemchabanginterautotire.com` อยู่ที่ [docs/deployment-readiness.md](docs/deployment-readiness.md)
+
+## ภาพรวมต้นแบบ CRM + ERP (Next.js)
+
+พัฒนาต้นแบบโมดูลธุรกิจร้านยาง (อ่านรายละเอียดใน `web/README.md`):
 
 - **Cockpit** `/dashboard` — KPI รายได้/คิว/โปร/สต็อก/แชท ในจอเดียว + กราฟรายได้ 6 เดือน
 - **CRM ลูกค้า** `/customers` — ทะเบียนรถ ยอดสะสม หน้า 360°
@@ -41,7 +47,7 @@ npm run dev          # http://localhost:3000
 - **Publishing Hub** `/publish` + `GET /api/cron/sync` — เขียนครั้งเดียวกระจาย LINE Broadcast / Facebook / เว็บ แล้วดึงยอด reach/clicks กลับมาวัดผล
 
 > ข้อมูลทั้งหมดยังวิ่งผ่านชั้น `web/src/lib/crm/repo.ts` เพียงไฟล์เดียว —
-> ตั้งค่า `DATABASE_URL` แล้วสลับไปฐาน MySQL เดิมได้โดยไม่ต้องแก้ UI
+> การตั้ง `DATABASE_URL` เพียงอย่างเดียวยังไม่เชื่อมข้อมูลจริง ต้องพัฒนาและทดสอบ repository กับ schema เดิมก่อน
 
 > ยังไม่ต้องมี MySQL ก็รันได้ (ผู้ใช้เดโมอยู่ใน `src/lib/auth.ts`)
 > เมื่อมีข้อมูลจริง ให้คัดลอก `.env.example` → `.env` แล้วเปลี่ยน `findUserByEmail()`

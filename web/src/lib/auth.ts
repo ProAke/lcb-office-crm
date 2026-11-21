@@ -67,6 +67,10 @@ export async function login(
   email: string,
   password: string,
 ): Promise<LoginResult> {
+  // The only implementation below is a public demo account, never production auth.
+  if (process.env.NODE_ENV === "production") {
+    return { ok: false, message: "ยังไม่ได้ตั้งค่าระบบยืนยันตัวตนจริง ไม่สามารถเข้าสู่ระบบ production ได้" };
+  }
   if (!email || !password) {
     return { ok: false, message: "กรุณากรอกอีเมลและรหัสผ่าน" };
   }

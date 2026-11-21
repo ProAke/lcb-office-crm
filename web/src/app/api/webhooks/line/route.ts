@@ -1,4 +1,4 @@
-import { createHmac } from "node:crypto";
+import { createHmac, timingSafeEqual } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
 import {
   appendIncomingMessage,
@@ -28,10 +28,12 @@ type LineEvent = {
 
 function verifySignature(rawBody: string, signature: string | null): boolean {
   const secret = process.env.LINE_CHANNEL_SECRET;
-  if (!secret) return true; // dev เดโม: ยังไม่ได้ตั้ง secret
+  if (!secret) return process.env.NODE_ENV !== "production"; // เดโมเท่านั้น
   if (!signature) return false;
   const digest = createHmac("sha256", secret).update(rawBody).digest("base64");
-  return digest === signature;
+  const expected = Buffer.from(digest);
+  const actual = Buffer.from(signature);
+  return expected.length === actual.length && timingSafeEqual(expected, actual);
 }
 
 async function replyToLine(replyToken: string, text: string) {
