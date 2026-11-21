@@ -10,12 +10,10 @@ import { listPosts, syncPostMetrics } from "@/lib/crm/repo";
  */
 export async function GET(request: NextRequest) {
   const secret = process.env.CRON_SECRET;
-  if (secret) {
-    const auth = request.headers.get("authorization") ?? "";
-    const qs = new URL(request.url).searchParams.get("secret");
-    if (auth !== `Bearer ${secret}` && qs !== secret) {
-      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-    }
+  if (!secret) return NextResponse.json({ error: "cron is not configured" }, { status: 503 });
+  const auth = request.headers.get("authorization") ?? "";
+  if (auth !== `Bearer ${secret}`) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
   let synced = 0;

@@ -46,15 +46,14 @@ export default async function LoginPage() {
             <span className="text-white/70">เวอร์ชันใหม่บน Next.js</span>
           </h1>
           <p className="mt-4 max-w-md text-sm leading-relaxed text-white/65">
-            ใช้ฐานข้อมูล MySQL ชุดเดิมทั้งหมด โครงสร้างข้อมูลไม่เปลี่ยนแปลง
-            แต่เปลี่ยนชั้นการทำงานจาก PHP เป็น Next.js (App Router + Server Actions)
+            ระบบต้นแบบ Next.js ใช้ข้อมูลเดโม การเชื่อมฐานข้อมูล MySQL เดิมและบัญชีผู้ใช้จริงยังอยู่ระหว่างเตรียมการ
           </p>
 
           <ul className="mt-10 space-y-3 text-sm text-white/75">
             {[
-              "ล็อกอินด้วยบัญชีเดิม และรหัสผ่านแบบ bcrypt เดิม",
-              "สิทธิ์ผู้ใช้ (role) คุมด้วย middleware แทน if($_SESSION)",
-              "โมดูล LINE Rich Menu ยังทำงานร่วมกับ Messaging API ได้เหมือนเดิม",
+              "การเชื่อมบัญชีผู้ใช้เดิมยังไม่ได้ดำเนินการ",
+              "บัญชีเดโมใช้ได้เฉพาะโหมดพัฒนา",
+              "Rich Menu รองรับ LINE Messaging API เมื่อกำหนด token",
             ].map((t) => (
               <li key={t} className="flex items-start gap-2.5">
                 <span className="mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded-full bg-emerald-400/20 text-[10px] text-emerald-300">
@@ -86,7 +85,7 @@ export default async function LoginPage() {
             กรุณาใช้อีเมลและรหัสผ่านของท่านเพื่อเข้าใช้งาน
           </p>
 
-          <LoginForm />
+          <LoginForm demo={process.env.NODE_ENV !== "production"} />
         </div>
       </section>
     </main>

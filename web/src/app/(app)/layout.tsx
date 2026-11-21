@@ -53,7 +53,7 @@ export default async function AppLayout({
         <div className="rounded-xl bg-white/6 p-3 text-xs text-white/60">
           <p className="font-medium text-white/85">Next.js App Router</p>
           <p className="mt-1 leading-relaxed">
-            ฐานข้อมูล MySQL ชุดเดิม · โครงสร้างตารางไม่เปลี่ยน
+            ข้อมูลเดโม · ยังไม่ได้เชื่อมฐานข้อมูลจริง
           </p>
         </div>
       </aside>
@@ -69,7 +69,7 @@ export default async function AppLayout({
                 ระบบบริหารจัดการสำนักงาน
               </p>
               <p className="text-[11px] text-muted">
-                office.laemchabanginterautotire.com
+                app.laemchabanginterautotire.com
               </p>
             </div>
           </div>
