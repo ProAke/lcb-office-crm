@@ -11,8 +11,8 @@ import type { StoreShape } from "./types";
  *           โดยไฟล์นี้เป็นชั้นเดียวที่แตะ storage จริง ๆ
  *
  * หมายเหตุ deploy จริง:
- *  - บน VPS เดิม (โฮสต์ PHP เดิม) ใช้ไฟล์ต่อชั่วคราวได้ แล้วค่อยย้ายเข้า MySQL
- *  - บน Vercel (ไม่มีดิสก์ถาวร) ต้องใช้ DATABASE_URL เท่านั้น
+ *  - JSON store ใช้เฉพาะเดโม ไม่รองรับข้อมูลจริงหรือหลาย process
+ *  - การตั้ง DATABASE_URL อย่างเดียวไม่ได้เชื่อม repo กับ MySQL
  */
 
 const DATA_DIR = path.join(process.cwd(), "data");

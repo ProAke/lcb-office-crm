@@ -70,7 +70,7 @@ const NAV: { section: string; items: Item[] }[] = [
     items: [
       {
         href: "/plan",
-        label: "แผนย้าย PHP → Next.js",
+        label: "แผนระบบและการเปิดใช้งาน",
         icon: "M8 4h8l4 4v12H4V4h4zM8 12h8M8 16h5",
       },
     ],
