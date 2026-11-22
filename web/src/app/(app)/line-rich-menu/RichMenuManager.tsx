@@ -6,6 +6,7 @@ type Menu = { richMenuId: string; name: string; chatBarText: string; size: { wid
 type Button = { label: string; type: "message" | "uri"; value: string };
 const blank = (): Button => ({ label: "", type: "message", value: "" });
 const endpoint = "/api/line/rich-menu";
+const preset = (): Button[] => ["โปรโมชั่น", "สินค้า", "จองนัดหมาย", "สมาชิก", "Location", "ติดต่ออื่น ๆ"].map(label => ({ label, type: "uri", value: "" }));
 
 export default function RichMenuManager({ canEdit }: { canEdit: boolean }) {
   const [menus, setMenus] = useState<Menu[]>([]);
@@ -15,6 +16,7 @@ export default function RichMenuManager({ canEdit }: { canEdit: boolean }) {
   const [busy, setBusy] = useState(false);
   const [loading, setLoading] = useState(true);
   const [buttons, setButtons] = useState<Button[]>([blank()]);
+  const [layout, setLayout] = useState<"strip" | "grid6">("strip");
   const load = useCallback(async () => {
     try {
       const response = await fetch(endpoint, { cache: "no-store" });
@@ -29,10 +31,10 @@ export default function RichMenuManager({ canEdit }: { canEdit: boolean }) {
     event.preventDefault(); const form = event.currentTarget;
     setBusy(true); setError(""); setNotice("");
     try {
-      const data = new FormData(form); data.set("buttons", JSON.stringify(buttons));
+      const data = new FormData(form); data.set("buttons", JSON.stringify(buttons)); data.set("layout", layout);
       const response = await fetch(endpoint, { method: "POST", body: data });
       const result = await response.json(); if (!response.ok) throw new Error(result.error);
-      form.reset(); setButtons([blank()]); setNotice("สร้างเมนูและอัปโหลดภาพแล้ว ตั้งเป็นเมนูหลักได้จากรายการด้านล่าง"); await load();
+      form.reset(); setLayout("strip"); setButtons([blank()]); setNotice("สร้างเมนูและอัปโหลดภาพแล้ว ตั้งเป็นเมนูหลักได้จากรายการด้านล่าง"); await load();
     } catch (e) { setError(e instanceof Error ? e.message : "สร้างเมนูไม่สำเร็จ"); } finally { setBusy(false); }
   }
   async function change(id: string, remove: boolean) {
@@ -52,19 +54,21 @@ export default function RichMenuManager({ canEdit }: { canEdit: boolean }) {
     {!canEdit && <p className="rounded-xl bg-amber-50 p-4 text-sm">เฉพาะผู้ดูแลระบบเท่านั้นที่สร้าง เปลี่ยน หรือลบเมนูได้</p>}
     {canEdit && <form onSubmit={create} className="card space-y-4 p-5">
       <h2 className="font-semibold">สร้าง Rich Menu ใหม่</h2>
-      <p className="text-sm text-muted">อัปโหลดภาพที่ออกแบบไว้แล้ว ปุ่มแบ่งพื้นที่ภาพแนวตั้งเท่า ๆ กันจากซ้ายไปขวา (1–6 ปุ่ม) การสร้างยังไม่เปลี่ยนเมนูหลัก</p>
+      <p className="text-sm text-muted">อัปโหลดภาพที่ออกแบบไว้แล้ว การสร้างยังไม่เปลี่ยนเมนูหลัก ชื่อปุ่มที่กำหนดจะไม่ถูกวาดลงบนภาพโดยอัตโนมัติ</p>
+      <label className="block text-sm">รูปแบบพื้นที่ปุ่ม<select className="input mt-1 w-full" value={layout} onChange={e => { const next = e.target.value as "strip" | "grid6"; setLayout(next); setButtons(next === "grid6" ? preset() : [blank()]); }}><option value="strip">แถบแนวตั้ง 1–6 ปุ่ม</option><option value="grid6">6 ช่อง (3 คอลัมน์ × 2 แถว)</option></select></label>
+      {layout === "grid6" && <div className="space-y-2"><p className="text-sm text-muted">ตัวอย่างตำแหน่งปุ่มจากซ้ายไปขวา ภาพต้องจัดวางให้ตรงผังนี้ โปรดกรอก URL จริงของแต่ละช่อง รวมถึงลิงก์ Google Maps ของร้าน</p><div aria-label="ตัวอย่างผัง 6 ช่อง" className="grid grid-cols-3 overflow-hidden rounded-lg border border-line">{buttons.map((b, i) => <div key={i} className="grid min-h-20 place-items-center border border-line bg-surface p-2 text-center text-sm">{b.label || `ช่อง ${i + 1}`}</div>)}</div></div>}
       <div className="grid gap-4 md:grid-cols-2">
         <label className="text-sm">ชื่อเมนู<input className="input mt-1 w-full" name="name" maxLength={300} required /></label>
         <label className="text-sm">ข้อความบนแถบแชท (ไม่เกิน 14 ตัวอักษร)<input className="input mt-1 w-full" name="chatBarText" maxLength={14} required /></label>
-        <label className="text-sm">ขนาดภาพ<select className="input mt-1 w-full" name="size"><option value="full">2500 × 1686</option><option value="half">2500 × 843</option></select></label>
+        <label className="text-sm">ขนาดภาพ<select className="input mt-1 w-full" name="size" key={layout}><option value="full">2500 × 1686</option>{layout === "strip" && <option value="half">2500 × 843</option>}</select></label>
         <label className="text-sm">ภาพ PNG หรือ JPEG (ไม่เกิน 1 MB)<input className="input mt-1 w-full" type="file" name="image" accept="image/png,image/jpeg" required /></label>
       </div>
       <div className="space-y-3"><h3 className="text-sm font-semibold">ปุ่มบนภาพ</h3>{buttons.map((b, i) => <div key={i} className="grid gap-2 rounded-lg bg-surface p-3 md:grid-cols-[1fr_1fr_2fr_auto]">
         <input aria-label={`ชื่อปุ่ม ${i + 1}`} className="input" placeholder={`ชื่อปุ่ม ${i + 1}`} maxLength={20} required value={b.label} onChange={e => update(i, { label: e.target.value })} />
         <select aria-label={`ประเภทปุ่ม ${i + 1}`} className="input" value={b.type} onChange={e => update(i, { type: e.target.value as Button["type"] })}><option value="message">ส่งข้อความ</option><option value="uri">เปิดลิงก์</option></select>
         <input aria-label={`ค่าปุ่ม ${i + 1}`} className="input" placeholder={b.type === "uri" ? "https://..." : "ข้อความที่ส่งเมื่อกด"} required value={b.value} onChange={e => update(i, { value: e.target.value })} />
-        <button type="button" className="text-sm text-red-700" disabled={buttons.length === 1 || busy} onClick={() => setButtons(buttons.filter((_, n) => n !== i))}>ลบปุ่ม</button>
-      </div>)}<button type="button" className="text-sm text-brand-700" disabled={buttons.length >= 6 || busy} onClick={() => setButtons([...buttons, blank()])}>+ เพิ่มปุ่ม</button></div>
+        <button type="button" className="text-sm text-red-700" disabled={layout === "grid6" || buttons.length === 1 || busy} onClick={() => setButtons(buttons.filter((_, n) => n !== i))}>ลบปุ่ม</button>
+      </div>)}<button type="button" className="text-sm text-brand-700" disabled={layout === "grid6" || buttons.length >= 6 || busy} onClick={() => setButtons([...buttons, blank()])}>+ เพิ่มปุ่ม</button></div>
       <button className="btn-primary" disabled={busy}>{busy ? "กำลังดำเนินการ…" : "สร้างและอัปโหลดภาพ"}</button>
     </form>}
     <section className="card space-y-3 p-5"><div className="flex justify-between"><h2 className="font-semibold">เมนูบน LINE</h2><button className="text-sm text-brand-700" onClick={() => void load()}>รีเฟรช</button></div>
