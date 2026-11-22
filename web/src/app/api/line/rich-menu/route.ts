@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
+import { richMenuBounds } from "@/lib/line/rich-menu-layout";
 
 export const dynamic = "force-dynamic";
 const API = "https://api.line.me/v2/bot";
@@ -38,18 +39,20 @@ export async function POST(request: Request) {
     const chatBarText = String(form.get("chatBarText") || "").trim();
     const size = String(form.get("size") || "");
     const image = form.get("image");
+    const layout = String(form.get("layout") || "strip");
     let buttons: { label: string; type: string; value: string }[];
     try { buttons = JSON.parse(String(form.get("buttons"))); } catch { return fail("ข้อมูลปุ่มไม่ถูกต้อง", 400); }
     if (!name || name.length > 300 || !chatBarText || chatBarText.length > 14 || !["full", "half"].includes(size) || !Array.isArray(buttons) || buttons.length < 1 || buttons.length > 6 || !(image instanceof File) || !["image/jpeg", "image/png"].includes(image.type) || image.size === 0 || image.size > 1024 * 1024) return fail("กรุณาตรวจสอบชื่อ ข้อความแถบ ขนาด ภาพ PNG/JPEG ไม่เกิน 1 MB และจำนวนปุ่ม 1–6 ปุ่ม", 400);
+    if (!["strip", "grid6"].includes(layout) || (layout === "grid6" && (buttons.length !== 6 || size !== "full"))) return fail("ผัง 6 ช่องต้องมี 6 ปุ่มและใช้ภาพขนาด 2500 × 1686", 400);
     for (const b of buttons) {
       if (!b || typeof b.label !== "string" || !b.label.trim() || b.label.length > 20 || typeof b.value !== "string" || !b.value.trim() || !["message", "uri"].includes(b.type)) return fail("ข้อมูลปุ่มไม่ถูกต้อง", 400);
       if (b.type === "message" && b.value.length > 300) return fail("ข้อความปุ่มยาวเกิน 300 ตัวอักษร", 400);
       if (b.type === "uri") { try { if (!["https:", "http:"].includes(new URL(b.value).protocol)) throw new Error(); } catch { return fail("ลิงก์ต้องเป็น URL http หรือ https", 400); } }
     }
     const height = size === "full" ? 1686 : 843;
+    const bounds = richMenuBounds(layout as "strip" | "grid6", height, buttons.length);
     const areas = buttons.map((b, i) => {
-      const x = Math.floor(i * 2500 / buttons.length), right = Math.floor((i + 1) * 2500 / buttons.length);
-      return { bounds: { x, y: 0, width: right - x, height }, action: b.type === "uri" ? { type: "uri", label: b.label.trim(), uri: b.value.trim() } : { type: "message", label: b.label.trim(), text: b.value.trim() } };
+      return { bounds: bounds[i], action: b.type === "uri" ? { type: "uri", label: b.label.trim(), uri: b.value.trim() } : { type: "message", label: b.label.trim(), text: b.value.trim() } };
     });
     const created = await line("/richmenu", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ size: { width: 2500, height }, selected: true, name, chatBarText, areas }) });
     if (!created.ok) return fail("LINE ไม่สามารถสร้างเมนูได้ โปรดตรวจสอบข้อมูลและสิทธิ์ token");
