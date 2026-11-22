@@ -1,6 +1,7 @@
 # web — LCB Office CRM + ERP (Next.js)
 
-ระบบบริหารจัดการร้านยาง/ล้อ (ลูกค้า-สินค้า-บริการ-โปรโมชัน-แชท AI) บน Next.js 15
+ต้นแบบระบบบริหารจัดการร้านยาง/ล้อ (ลูกค้า-สินค้า-บริการ-โปรโมชัน-แชท AI) บน Next.js 15
+โดเมนเป้าหมาย: https://app.laemchabanginterautotire.com (ยังไม่ได้ deploy)
 พัฒนาต่อจากโครงย้ายระบบ PHP เดิม (`office.laemchabanginterautotire.com`)
 
 ```bash
@@ -20,7 +21,7 @@ npm run dev     # http://localhost:3000  (เดโม: admin / admin)
 | `/chat` | AI ตอบแชท | Inbox รวม LINE/Facebook/Web, AI Auto-reply, ปุ่มให้ AI ตอบ, เจ้าหน้าที่แทรกได้ |
 | `/publish` | Publishing Hub | เขียนครั้งเดียวกระจาย LINE Broadcast / Facebook / เว็บ + ปุ่มจำลองยอด reach/clicks |
 | `/line-rich-menu` | LINE Rich Menu | อ่านรายการจาก LINE, สร้างเมนูพร้อมอัปโหลดภาพ, ตั้งเมนูหลัก และลบเมนู (เฉพาะผู้ดูแลระบบ) |
-| `/plan` | แผนย้ายระบบ | เอกสารเทียบ PHP → Next.js |
+| `/plan` | แผนระบบ | สถานะและขั้นตอนเปิดใช้งาน Next.js |
 
 ## API
 
