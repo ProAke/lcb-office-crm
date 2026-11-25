@@ -56,3 +56,7 @@ UI (Server Components) → lib/crm/repo.ts → lib/crm/store.ts
 `src/lib/ai/engine.ts` ตอนนี้เป็น intent engine ที่อ่านข้อมูลจริงจากระบบ
 (สต็อก/โปร/การจอง) — ฟังก์ชัน `buildShopContext()` เตรียม context ไว้แล้ว
 สำหรับส่งให้ OpenAI/Claude เป็น system prompt ตอนอัปเกรด
+
+## บัญชีตั้งค่าชั่วคราว
+
+มีตัวเลือกบัญชี admin ชั่วคราวที่ **ปิดโดยปริยาย** พร้อมรหัสผ่าน hash และเวลาหมดอายุ สำหรับ staging ที่จำกัดการเข้าถึงเท่านั้น ดู [วิธีตั้งค่าและข้อควรระวัง](../docs/temporary-access.md) ไม่ใช่การเชื่อมบัญชีหรือฐานข้อมูลจริง

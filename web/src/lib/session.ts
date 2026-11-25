@@ -1,6 +1,7 @@
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { SESSION_COOKIE, SESSION_MAX_AGE_SECONDS } from "./constants";
+import { bootstrapConfig } from "./bootstrap";
 
 /**
  * เทียบเท่า session_start() + $_SESSION ของ PHP
@@ -16,6 +17,7 @@ export type SessionUser = {
   name: string;
   email: string;
   role: "admin" | "staff" | "viewer";
+  bootstrap?: boolean;
 };
 
 function secretKey() {
@@ -28,11 +30,15 @@ function secretKey() {
 }
 
 export async function createSession(user: SessionUser) {
-  const token = await new SignJWT({ ...user })
+  const bootstrap = user.bootstrap ? bootstrapConfig() : null;
+  if (user.bootstrap && !bootstrap) throw new Error("Temporary access is not configured or has expired");
+  const maxAge = bootstrap ? Math.min(MAX_AGE_SECONDS, Math.floor((bootstrap.expiry - Date.now()) / 1000)) : MAX_AGE_SECONDS;
+  if (maxAge <= 0) throw new Error("Temporary access has expired");
+  const token = await new SignJWT({ ...user, ...(bootstrap ? { bootstrapFingerprint: bootstrap.fingerprint } : {}) })
     .setProtectedHeader({ alg: "HS256" })
     .setSubject(String(user.id))
     .setIssuedAt()
-    .setExpirationTime(`${MAX_AGE_SECONDS}s`)
+    .setExpirationTime(`${maxAge}s`)
     .sign(secretKey());
 
   const jar = await cookies();
@@ -41,7 +47,7 @@ export async function createSession(user: SessionUser) {
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     path: "/",
-    maxAge: MAX_AGE_SECONDS,
+    maxAge,
   });
 }
 
@@ -56,11 +62,16 @@ export async function getSession(): Promise<SessionUser | null> {
   if (!token) return null;
   try {
     const { payload } = await jwtVerify(token, secretKey());
+    if (payload.bootstrap === true) {
+      const config = bootstrapConfig();
+      if (!config || payload.bootstrapFingerprint !== config.fingerprint || payload.role !== "admin" || Number(payload.sub) !== -1) return null;
+    }
     return {
       id: Number(payload.sub ?? payload.id),
       name: String(payload.name ?? ""),
       email: String(payload.email ?? ""),
       role: (payload.role as SessionUser["role"]) ?? "staff",
+      ...(payload.bootstrap === true ? { bootstrap: true } : {}),
     };
   } catch {
     return null;

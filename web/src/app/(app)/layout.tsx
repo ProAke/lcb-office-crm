@@ -95,6 +95,7 @@ export default async function AppLayout({
           </div>
         </header>
 
+        {session.bootstrap && <div role="status" className="border-b border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">บัญชีผู้ดูแลชั่วคราว · ข้อมูลยังเป็นเดโม ไม่ใช้ข้อมูลลูกค้าจริงหรือเชื่อมช่องทางจริง และปิดบัญชีนี้เมื่อเสร็จสิ้นการตั้งค่า</div>}
         <main className="min-w-0 flex-1 px-4 py-6 lg:px-7 lg:py-8">
           {children}
         </main>
