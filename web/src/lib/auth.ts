@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import type { SessionUser } from "./session";
+import { bootstrapConfig } from "./bootstrap";
 
 /**
  * ชั้นตรวจสอบผู้ใช้
@@ -67,9 +68,15 @@ export async function login(
   email: string,
   password: string,
 ): Promise<LoginResult> {
-  // The only implementation below is a public demo account, never production auth.
   if (process.env.NODE_ENV === "production") {
-    return { ok: false, message: "ยังไม่ได้ตั้งค่าระบบยืนยันตัวตนจริง ไม่สามารถเข้าสู่ระบบ production ได้" };
+    const config = bootstrapConfig();
+    if (!config) return { ok: false, message: "ยังไม่ได้ตั้งค่าระบบยืนยันตัวตนจริง ไม่สามารถเข้าสู่ระบบ production ได้" };
+    // bcrypt truncates input at 72 bytes: reject long inputs and weak passwords.
+    const size = Buffer.byteLength(password, "utf8");
+    if (email.trim().toLowerCase() !== "admin" || size < 16 || size > 72 || !(await bcrypt.compare(password, config.hash))) {
+      return { ok: false, message: "อีเมลหรือรหัสผ่านไม่ถูกต้อง" };
+    }
+    return { ok: true, user: { id: -1, name: "ผู้ดูแลชั่วคราว", email: "admin", role: "admin", bootstrap: true } };
   }
   if (!email || !password) {
     return { ok: false, message: "กรุณากรอกอีเมลและรหัสผ่าน" };
