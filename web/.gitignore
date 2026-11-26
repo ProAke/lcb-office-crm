@@ -45,3 +45,6 @@ next-env.d.ts
 
 # runtime demo data (สร้างอัตโนมัติจาก seed.ts)
 data/store.json
+
+# private setup credentials
+/data/private/

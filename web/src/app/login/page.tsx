@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
 import LoginForm from "./LoginForm";
+import { fileSetupStatus } from "@/lib/file-setup";
 
 export const metadata: Metadata = { title: "เข้าสู่ระบบ" };
 
@@ -86,6 +87,7 @@ export default async function LoginPage() {
           </p>
 
           <LoginForm demo={process.env.NODE_ENV !== "production"} />
+          {fileSetupStatus() && <p className="mt-4 text-center text-sm"><a href="/setup" className="text-brand-700 underline">ตั้งรหัสผู้ดูแลชั่วคราว</a></p>}
         </div>
       </section>
     </main>
