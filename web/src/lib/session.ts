@@ -2,6 +2,7 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { SESSION_COOKIE, SESSION_MAX_AGE_SECONDS } from "./constants";
 import { bootstrapConfig } from "./bootstrap";
+import { fileSetupConfig } from "./file-setup";
 
 /**
  * เทียบเท่า session_start() + $_SESSION ของ PHP
@@ -18,10 +19,11 @@ export type SessionUser = {
   email: string;
   role: "admin" | "staff" | "viewer";
   bootstrap?: boolean;
+  fileSetup?: boolean;
 };
 
 function secretKey() {
-  const configured = process.env.AUTH_SECRET;
+  const configured = process.env.AUTH_SECRET || fileSetupConfig()?.sessionSecret;
   if (process.env.NODE_ENV === "production" && (!configured || configured.length < 32 || configured === "change-me-to-a-random-32-byte-string" || configured === "dev-only-secret-please-change-in-production-32")) {
     throw new Error("AUTH_SECRET ต้องเป็นค่าลับที่ปลอดภัยอย่างน้อย 32 ตัวอักษรใน production");
   }
@@ -30,7 +32,7 @@ function secretKey() {
 }
 
 export async function createSession(user: SessionUser) {
-  const bootstrap = user.bootstrap ? bootstrapConfig() : null;
+  const bootstrap = user.bootstrap ? (user.fileSetup ? fileSetupConfig() : bootstrapConfig()) : null;
   if (user.bootstrap && !bootstrap) throw new Error("Temporary access is not configured or has expired");
   const maxAge = bootstrap ? Math.min(MAX_AGE_SECONDS, Math.floor((bootstrap.expiry - Date.now()) / 1000)) : MAX_AGE_SECONDS;
   if (maxAge <= 0) throw new Error("Temporary access has expired");
@@ -63,7 +65,7 @@ export async function getSession(): Promise<SessionUser | null> {
   try {
     const { payload } = await jwtVerify(token, secretKey());
     if (payload.bootstrap === true) {
-      const config = bootstrapConfig();
+      const config = payload.fileSetup === true ? fileSetupConfig() : bootstrapConfig();
       if (!config || payload.bootstrapFingerprint !== config.fingerprint || payload.role !== "admin" || Number(payload.sub) !== -1) return null;
     }
     return {
@@ -72,6 +74,7 @@ export async function getSession(): Promise<SessionUser | null> {
       email: String(payload.email ?? ""),
       role: (payload.role as SessionUser["role"]) ?? "staff",
       ...(payload.bootstrap === true ? { bootstrap: true } : {}),
+      ...(payload.fileSetup === true ? { fileSetup: true } : {}),
     };
   } catch {
     return null;
