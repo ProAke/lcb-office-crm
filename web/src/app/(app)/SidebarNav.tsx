@@ -68,6 +68,7 @@ const NAV: { section: string; items: Item[] }[] = [
   {
     section: "ระบบ",
     items: [
+      { href: "/diagnostics", label: "ตรวจสอบปัญหา", icon: "M12 3l9 16H3L12 3zM12 9v4M12 16h.01" },
       {
         href: "/plan",
         label: "แผนระบบและการเปิดใช้งาน",

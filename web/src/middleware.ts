@@ -29,5 +29,6 @@ export const config = {
     "/publish/:path*",
     "/line-rich-menu/:path*",
     "/plan/:path*",
+    "/diagnostics/:path*",
   ],
 };

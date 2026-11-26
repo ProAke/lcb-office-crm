@@ -1,15 +1,35 @@
 "use client";
 
-import { useActionState } from "react";
-import { loginAction, type LoginState } from "./actions";
-
-const initialState: LoginState = {};
+import { useState } from "react";
+import { loginResponse } from "@/lib/login-response";
+import { reportIncident } from "@/lib/report-incident";
 
 export default function LoginForm({ demo }: { demo: boolean }) {
-  const [state, formAction, pending] = useActionState(loginAction, initialState);
+  const [error, setError] = useState("");
+  const [pending, setPending] = useState(false);
+  async function submit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (pending) return;
+    const form = new FormData(event.currentTarget);
+    setError(""); setPending(true);
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: form.get("email"), password: form.get("password") }),
+      });
+      const result = await loginResponse(response);
+      if (!result.ok) {
+        if (response.status === 403) reportIncident("login_blocked", 403);
+        else if (response.status === 429 || response.status >= 500 || response.ok) reportIncident("login_server_error", [429, 500, 502, 503, 504].includes(response.status) ? response.status : undefined);
+        setError(result.error ?? "ไม่สามารถเข้าสู่ระบบได้"); return;
+      }
+      window.location.assign("/dashboard");
+    } catch { reportIncident("login_network_error"); setError("เชื่อมต่อระบบไม่ได้ กรุณาตรวจสอบอินเทอร์เน็ตแล้วลองใหม่"); }
+    finally { setPending(false); }
+  }
 
   return (
-    <form action={formAction} className="space-y-4">
+    <form onSubmit={submit} method="post" action="/api/auth/login" className="space-y-4">
       <div>
         <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-ink">
           อีเมล / ชื่อผู้ใช้
@@ -51,12 +71,12 @@ export default function LoginForm({ demo }: { demo: boolean }) {
         />
       </div>
 
-      {state.error ? (
+      {error ? (
         <p
           role="alert"
           className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
         >
-          {state.error}
+          {error}
         </p>
       ) : null}
 
