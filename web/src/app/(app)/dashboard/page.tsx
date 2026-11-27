@@ -74,6 +74,7 @@ export default async function DashboardPage() {
     <div className="mx-auto max-w-6xl space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-amber-600">SERVICE COCKPIT</p>
           <h1 className="text-xl font-semibold tracking-tight lg:text-2xl">
             Cockpit · สวัสดี, {session?.name ?? "ผู้ใช้งาน"} 👋
           </h1>

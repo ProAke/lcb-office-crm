@@ -51,6 +51,7 @@ const NAV: { section: string; items: Item[] }[] = [
   {
     section: "ช่องทางเผยแพร่",
     items: [
+      { href: "/line-workspace", label: "บริการลูกค้าผ่าน LINE", icon: "M4 5h16v10H9l-5 4V5zM8 9h8M8 12h5" },
       {
         href: "/publish",
         label: "เผยแพร่ทุกช่องทาง",
@@ -68,6 +69,7 @@ const NAV: { section: string; items: Item[] }[] = [
   {
     section: "ระบบ",
     items: [
+      { href: "/settings", label: "ตั้งค่าระบบ", icon: "M12 3v2m0 14v2M3 12h2m14 0h2M5.6 5.6l1.4 1.4m10 10 1.4 1.4M18.4 5.6 17 7M7 17l-1.4 1.4M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" },
       { href: "/diagnostics", label: "ตรวจสอบปัญหา", icon: "M12 3l9 16H3L12 3zM12 9v4M12 16h.01" },
       {
         href: "/plan",
@@ -85,7 +87,7 @@ export default function SidebarNav() {
     <nav className="space-y-5">
       {NAV.map((group) => (
         <div key={group.section}>
-          <p className="mb-2 px-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-white/35">
+          <p className="mb-2 px-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
             {group.section}
           </p>
           <ul className="space-y-1">
@@ -99,8 +101,8 @@ export default function SidebarNav() {
                     className={[
                       "group flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition",
                       active
-                        ? "bg-white/12 font-medium text-white shadow-inner"
-                        : "text-white/70 hover:bg-white/6 hover:text-white",
+                        ? "bg-amber-500/15 font-medium text-amber-300"
+                        : "text-slate-400 hover:bg-slate-800 hover:text-slate-100",
                     ].join(" ")}
                   >
                     <svg
@@ -116,7 +118,7 @@ export default function SidebarNav() {
                     </svg>
                     <span className="truncate">{item.label}</span>
                     {item.badge ? (
-                      <span className="ml-auto rounded bg-accent/20 px-1.5 py-0.5 text-[10px] font-semibold text-amber-300">
+                      <span className="ml-auto rounded bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-amber-300">
                         {item.badge}
                       </span>
                     ) : null}

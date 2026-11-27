@@ -28,7 +28,9 @@ export const config = {
     "/chat/:path*",
     "/publish/:path*",
     "/line-rich-menu/:path*",
+    "/line-workspace/:path*",
     "/plan/:path*",
     "/diagnostics/:path*",
+    "/settings/:path*",
   ],
 };
