@@ -1,21 +1,18 @@
 import type { Metadata } from "next";
-
-export const metadata: Metadata = { title: "แผนระบบ App" };
-
-const sections = [
-  { title: "1. ตรวจสอบข้อมูลเดิม", text: "สำรวจ schema ของ MySQL บัญชีผู้ใช้ งานและการเชื่อมต่อเดิมโดยไม่แก้ข้อมูล แล้วจัดทำ mapping ที่ตรวจสอบได้" },
-  { title: "2. เชื่อมฐานข้อมูลและบัญชีจริง", text: "พัฒนา repository และระบบล็อกอินให้ใช้ข้อมูลเดิม พร้อมตรวจสิทธิ์และ transaction โดยไม่เปลี่ยน schema เดิม" },
-  { title: "3. พัฒนาและทดสอบบริการ", text: "ตรวจสอบ CRM ศูนย์บริการ แชทและการเผยแพร่ รวมถึงทดสอบ Rich Menu 6 ช่องและพัฒนาระบบแต้ม QR ตามข้อกำหนดที่อนุมัติ" },
-  { title: "4. ทดสอบก่อนเปิดระบบ", text: "ทดสอบกับฐานสำเนาและ LINE test account ตรวจสอบความปลอดภัย การสำรอง/กู้คืน และให้ร้านตรวจรับ" },
-  { title: "5. เปิดใช้โดเมน App", text: "ผู้ดูแลตั้ง DNS และ HTTPS สำหรับ app.laemchabanginterautotire.com เชื่อม webhook เมื่อระบบพร้อม และเตรียม rollback" },
-  { title: "6. ปลดระวางระบบเดิม", text: "ปิดหรือลบระบบ PHP บนโฮสต์เดิมได้หลังตรวจรับ สำรองและทดสอบกู้คืน พร้อมได้รับอนุมัติจากเจ้าของระบบ" },
+import Link from "next/link";
+export const metadata: Metadata = { title: "แผนระบบและการเผยแพร่" };
+const steps = [
+  { no: "01", title: "ตรวจข้อมูลและบัญชีเดิม", status: "รอตรวจสอบ", text: "สำรวจ schema MySQL ผู้ใช้ และระบบเดิมแบบอ่านอย่างเดียว จัดทำ mapping โดยไม่เปลี่ยนตารางหรือข้อมูล" },
+  { no: "02", title: "เชื่อมระบบและตั้งค่าสิทธิ์", status: "ต้องพัฒนา", text: "เชื่อมฐานเดิมและบัญชีจริง ตรวจสิทธิ์ทุก action สำรองและทดสอบกู้คืน รวมถึงตั้งค่าช่องทางอย่างปลอดภัย" },
+  { no: "03", title: "เตรียมสินค้าและโปรโมชั่น", status: "ต้นแบบ", text: "ตรวจชื่อ ราคา สต็อก วันเริ่ม/สิ้นสุด และเงื่อนไขในข้อมูลทดสอบก่อนอนุมัติเผยแพร่" },
+  { no: "04", title: "เตรียม LINE Rich Menu", status: "ต้องทดสอบ", text: "กำหนดภาพและปลายทาง 6 ช่อง ทดลองสินค้า โปร จอง สมาชิก แผนที่ และติดต่อกับ LINE test account" },
+  { no: "05", title: "สมาชิกและสะสมคะแนน", status: "ยังไม่พัฒนา", text: "อนุมัติกติกาแต้ม ตรวจ schema เดิม และพัฒนายืนยันสมาชิก ประวัติ สแกน QR และป้องกันแต้มซ้ำ" },
+  { no: "06", title: "ตรวจรับและเผยแพร่จริง", status: "รออนุมัติ", text: "ทดสอบ UAT ความปลอดภัย ผลการส่ง และ rollback ก่อนเปิดช่องทางจริง; ไม่ลบระบบเดิมก่อนยืนยันและสำรอง" },
 ];
-
 export default function PlanPage() {
-  return <div className="mx-auto max-w-5xl space-y-6">
-    <header><p className="text-sm font-medium text-brand-700">NEXT.JS · APP DOMAIN</p><h1 className="mt-1 text-2xl font-semibold">แผนระบบและการเปิดใช้งาน</h1><p className="mt-2 text-sm text-muted">เป้าหมาย: https://app.laemchabanginterautotire.com</p></header>
-    <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-relaxed text-amber-900"><strong>ยังไม่พร้อมใช้งานจริง:</strong> CRM ยังใช้ข้อมูลเดโม ยังไม่ได้เชื่อม MySQL และบัญชีผู้ใช้จริง ระบบสมาชิก QR ยังต้องพัฒนา และ Rich Menu แบบ 3×2 ยังต้องทดสอบกับ LINE จริง ห้ามนำข้อมูลลูกค้าจริงมาใช้จนกว่าจะทดสอบและอนุมัติครบ</div>
-    <section className="card space-y-4 p-5"><h2 className="font-semibold">ลำดับงานที่ต้องดำเนินการ</h2><div className="grid gap-3 md:grid-cols-2">{sections.map(s => <div key={s.title} className="rounded-lg border border-line p-4"><h3 className="text-sm font-semibold">{s.title}</h3><p className="mt-2 text-sm leading-relaxed text-muted">{s.text}</p></div>)}</div></section>
-    <section className="card space-y-3 p-5"><h2 className="font-semibold">หลักการสำคัญ</h2><ul className="list-disc space-y-2 pl-5 text-sm leading-relaxed text-muted"><li>ใช้ MySQL ชุดเดิมโดยไม่เปลี่ยน schema หรือลบข้อมูลโดยไม่ได้รับอนุมัติ การตั้ง DATABASE_URL เพียงอย่างเดียวไม่เชื่อมข้อมูล CRM</li><li>ไม่มีซอร์สไฟล์ PHP สำหรับรันอยู่ใน repository นี้ การปลดระวางระบบที่โฮสต์เดิมต้องดำเนินการแยกและตรวจสอบก่อน</li><li>ระบบปัจจุบันไม่สามารถล็อกอินด้วยบัญชีเดโมใน production และยังต้องพัฒนาการยืนยันตัวตนจริง</li><li>โดเมนที่แสดงเป็นเป้าหมาย ยังไม่ได้ยืนยันว่า DNS, HTTPS หรือ deployment ถูกตั้งค่าแล้ว</li></ul></section>
+  return <div className="mx-auto max-w-6xl space-y-6"><header><p className="text-xs font-semibold uppercase tracking-[0.16em] text-amber-600">RELEASE ROADMAP</p><h1 className="mt-2 text-2xl font-semibold text-slate-900">แผนระบบและการเผยแพร่</h1><p className="mt-1 text-sm text-muted">ทำทีละขั้นจากข้อมูลเดโมสู่ช่องทางบริการจริง</p></header>
+    <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm leading-relaxed text-amber-900"><strong>ยังไม่พร้อม production:</strong> การเชื่อม MySQL และบัญชีจริงยังไม่เสร็จ คะแนน/QR ยังไม่มี และ LINE ยังต้องทดสอบกับบัญชีจริง ปุ่มเผยแพร่เดิมอาจส่งจริงหากตั้ง token แล้ว จึงควรใช้บัญชีทดสอบเท่านั้น</div>
+    <div className="grid gap-4 md:grid-cols-2">{steps.map(step => <section key={step.no} className="card flex gap-4 p-5"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-slate-900 text-sm font-bold text-amber-300">{step.no}</span><div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><h2 className="font-semibold text-slate-900">{step.title}</h2><span className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-medium text-slate-600">{step.status}</span></div><p className="mt-2 text-sm leading-relaxed text-slate-500">{step.text}</p></div></section>)}</div>
+    <div className="flex flex-wrap gap-3 text-sm"><Link href="/settings" className="font-semibold text-brand-700 hover:underline">ตั้งค่าระบบ →</Link><Link href="/line-workspace" className="font-semibold text-brand-700 hover:underline">บริการผ่าน LINE →</Link><Link href="/publish" className="font-semibold text-brand-700 hover:underline">Publishing Hub →</Link></div>
   </div>;
 }
