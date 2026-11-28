@@ -25,7 +25,7 @@ export default async function PromotionsPage() {
       <div>
         <h1 className="text-xl font-semibold tracking-tight">โปรโมชันรายเดือน</h1>
         <p className="mt-1 text-sm text-muted">
-          วางแผนโปรทุกเดือน เผยแพร่ทุกช่องทางในรอบเดียว — ระบบดึงยอด views/การใช้สิทธิ์กลับมาเอง
+          วางแผนโปรและเตรียมร่างโพสต์เพื่อตรวจสอบก่อนส่ง สถิติปัจจุบันเป็นข้อมูลจำลอง
         </p>
       </div>
 
@@ -78,7 +78,7 @@ export default async function PromotionsPage() {
                   <form action={publishPromotionAction} className="ml-auto">
                     <input type="hidden" name="id" value={p.id} />
                     <button className="rounded-lg bg-brand-700 px-3 py-1.5 text-xs font-medium text-white hover:bg-brand-600">
-                      🚀 เผยแพร่ทุกช่องทาง
+                      📝 เตรียมร่างโพสต์
                     </button>
                   </form>
                 )}

@@ -8,6 +8,7 @@ import {
   setPromotionStatus,
 } from "@/lib/crm/repo";
 import type { ChannelName, PromotionStatus } from "@/lib/crm/types";
+import { getSession } from "@/lib/session";
 
 export type PromoFormState = { error?: string };
 
@@ -53,8 +54,9 @@ export async function changePromotionStatusAction(formData: FormData): Promise<v
   revalidatePath("/promotions");
 }
 
-/** "เผยแพร่ตอนนี้" — สร้างโพสต์เผยแพร่จากการ์ดโปรโมชันไปทุกช่องทางที่ตั้งไว้ */
+/** สร้างร่างโพสต์เท่านั้น ไม่ส่งไปช่องทางภายนอก */
 export async function publishPromotionAction(formData: FormData): Promise<void> {
+  if ((await getSession())?.role !== "admin") return;
   const id = Number(formData.get("id"));
   const p = getPromotion(id);
   if (!p || !p.channels.length) return;
@@ -69,7 +71,6 @@ export async function publishPromotionAction(formData: FormData): Promise<void> 
     channels: p.channels,
   });
 
-  if (p.status === "draft") setPromotionStatus(id, "active");
   revalidatePath("/promotions");
   revalidatePath("/publish");
 }

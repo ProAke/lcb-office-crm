@@ -72,17 +72,17 @@ export default async function DashboardPage() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-3">
+      <div className="flex flex-wrap items-end justify-between gap-4 rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 px-5 py-6 shadow-sm lg:px-7">
         <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-amber-600">SERVICE COCKPIT</p>
-          <h1 className="text-xl font-semibold tracking-tight lg:text-2xl">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-amber-400">SERVICE COCKPIT</p>
+          <h1 className="text-xl font-semibold tracking-tight text-white lg:text-2xl">
             Cockpit · สวัสดี, {session?.name ?? "ผู้ใช้งาน"} 👋
           </h1>
-          <p className="mt-1 text-sm text-muted">
+          <p className="mt-1 text-sm text-slate-300">
             ศูนย์บัญชาการร้านยางแหลมฉบัง — ลูกค้า สินค้า โปรโมชัน และช่องทางขาย ในจอเดียว
           </p>
         </div>
-        <span className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700 ring-1 ring-emerald-200">
+        <span className="flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-300 ring-1 ring-emerald-500/30">
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
           AI Chat เปิดอยู่ {s.aiConversations} ห้อง · ข้อความค้าง {s.unreadChats}
         </span>
@@ -91,7 +91,7 @@ export default async function DashboardPage() {
       {/* KPI */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {kpis.map((k) => (
-          <Link key={k.label} href={k.href} className="card p-4 transition hover:-translate-y-0.5 hover:shadow-md">
+          <Link key={k.label} href={k.href} className="card border-t-2 border-t-amber-400 p-4 transition hover:-translate-y-0.5 hover:shadow-md">
             <p className="text-xs font-medium uppercase tracking-wide text-muted">{k.label}</p>
             <p className="mt-2 text-[26px] font-semibold leading-none">{k.value}</p>
             <p className="mt-1.5 text-[11px] leading-snug text-muted">{k.sub}</p>

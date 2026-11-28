@@ -8,8 +8,8 @@ const initial: PublishFormState = {};
 
 const TEMPLATES: Record<string, string> = {
   "": "",
-  promo: "🔥 โปรเดือนนี้! เปลี่ยนยางครบ 4 เส้น\nฟรี! ตั้งศูนย์ 3D + ถ่วงล้อ (มูลค่า 1,200.-)\n\nจองคิวผ่านไลน์นี้ได้เลย 👉 หรือโทร 038-400-400",
-  check: "🚗 เช็กสภาพยางฟรี! ก่อนเดินทางไกล\n— ดอกยาง ลมยาง ความลึก เช็กครบทุกจุด\n\nร้านเปิดทุกวัน 08:00-17:30 น. จองคิวล่วงหน้าไม่ต้องรอ",
+  promo: "โปรโมชั่นประจำเดือน\nกรุณาเพิ่มรายละเอียด เงื่อนไข และช่วงเวลาที่ตรวจสอบแล้วก่อนเผยแพร่",
+  check: "บริการตรวจสภาพยาง\nกรุณาเพิ่มรายละเอียด ราคา และเวลาเปิดบริการที่ตรวจสอบแล้วก่อนเผยแพร่",
 };
 
 export default function Composer({
@@ -54,7 +54,7 @@ export default function Composer({
             <p role="alert" className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{state.error}</p>
           )}
           {state.results && (
-            <ul className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs text-emerald-800">
+            <ul className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700">
               {state.results.map((r) => <li key={r}>• {r}</li>)}
             </ul>
           )}
@@ -83,10 +83,11 @@ export default function Composer({
           {activePromos.length > 0 && (
             <p className="rounded-lg bg-surface px-3 py-2 text-[11px] leading-relaxed text-muted ring-1 ring-line">
               💡 โปรที่กำลังใช้งาน: {activePromos.map((p) => p.code).join(", ")}
-              <br />กดปุ่ม 🚀 เผยแพร่ จากหน้าโปรโมชัน เพื่อส่งการ์ดโปรนั้นออกได้เลย
+              <br />ปุ่มจากหน้าโปรโมชันจะสร้างร่างโพสต์ ต้องตรวจสอบก่อนส่งจริง
             </p>
           )}
 
+          <label className="flex items-start gap-2 text-xs text-amber-800"><input type="checkbox" name="confirmPublish" value="yes" required className="mt-0.5" /><span>ยืนยันส่งจริงไปยังช่องทางที่เลือก กรุณาตรวจข้อมูลก่อนส่ง</span></label>
           <SubmitButton label="🚀 เผยแพร่ทันที" pendingLabel="กำลังกระจายออก…" className="btn-primary" />
         </div>
       </form>

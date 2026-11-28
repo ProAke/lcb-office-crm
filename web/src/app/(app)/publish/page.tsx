@@ -30,7 +30,7 @@ export default async function PublishPage() {
       <div>
         <h1 className="text-xl font-semibold tracking-tight">Publishing Hub — เผยแพร่ทุกช่องทางในเว็บเดียว</h1>
         <p className="mt-1 text-sm text-muted">
-          เขียนครั้งเดียว → กระจายไป LINE OA, Facebook, หน้าเว็บพร้อมกัน → ดึงยอด reach/clicks กลับมาวัดผล
+          LINE และ Facebook ส่งได้เมื่อกำหนด token และยืนยันส่ง; หน้าเว็บยังไม่เชื่อม และสถิติที่แสดงเป็นข้อมูลจำลอง
         </p>
       </div>
 
@@ -57,15 +57,15 @@ export default async function PublishPage() {
                 <h2 className="mt-1.5 font-semibold leading-snug">{post.title}</h2>
                 <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed text-muted">{post.body}</p>
               </div>
-              <form action={syncMetricsAction}>
+              {process.env.NODE_ENV !== "production" && <form action={syncMetricsAction}>
                 <input type="hidden" name="id" value={post.id} />
                 <button
                   className="shrink-0 rounded-lg bg-brand-500/10 px-3 py-2 text-xs font-medium text-brand-700 ring-1 ring-brand-500/20 hover:bg-brand-500/20"
-                  title="ดึงยอด reach/clicks ล่าสุดจากทุกช่องทางกลับเข้าระบบ"
+                  title="จำลองข้อมูลสำหรับเดโม ไม่ใช่สถิติจริง"
                 >
-                  🔄 ดึงข้อมูลกลับ
+                  🔄 จำลองสถิติ
                 </button>
-              </form>
+              </form>}
             </div>
 
             <div className="mt-4 grid gap-2.5 sm:grid-cols-3">
@@ -78,14 +78,17 @@ export default async function PublishPage() {
                     <p className="flex items-center gap-1.5 text-xs font-medium">
                       {CHANNEL_LABEL[ch.name]}
                       {ch.status === "published" ? (
-                        <span className="text-emerald-600">✓ เผยแพร่แล้ว</span>
+                        <span className={ch.resultNote ? "text-emerald-600" : "text-amber-700"}>{ch.resultNote ? "✓ API รับคำขอ" : "สถานะเดิม · ไม่ยืนยัน"}</span>
                       ) : ch.status === "pending" ? (
                         <span className="text-amber-600">…รอกระจาย</span>
+                      ) : ch.status === "unknown" ? (
+                        <span className="text-amber-700">? ผลไม่แน่ชัด</span>
                       ) : (
-                        <span className="text-red-600">✗ ล้มเหลว</span>
+                        <span className="text-red-600">✗ ไม่สำเร็จ</span>
                       )}
                     </p>
-                    <p className="mt-0.5 text-[11px] text-muted">
+                    {ch.resultNote && <p className="mt-1 text-[11px] text-muted">{ch.resultNote}</p>}
+                    <p className="mt-0.5 text-[11px] text-muted">ตัวเลขเดโม ·
                       👁 {ch.reach.toLocaleString()} · 🖱 {ch.clicks.toLocaleString()}
                     </p>
                   </div>

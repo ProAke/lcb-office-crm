@@ -137,8 +137,9 @@ export type Conversation = {
 
 export type PostChannelStatus = {
   name: ChannelName;
-  status: "pending" | "published" | "failed";
+  status: "pending" | "published" | "failed" | "unknown";
   publishedAt?: string;
+  resultNote?: string;
   reach: number;
   clicks: number;
 };
