@@ -1,3 +1,5 @@
+> **อัปเดต:** พบซอร์ส PHP ใน [ProAke/lcb-phpweb](https://github.com/ProAke/lcb-phpweb) แล้ว ดู [ผลตรวจซอร์สเดิม](legacy-source-findings.md) ไม่จำเป็นต้องส่งซอร์สซ้ำ เว้นแต่บนเซิร์ฟเวอร์เป็นเวอร์ชันอื่น ยังต้องตรวจ schema และ deployment จริง
+
 # วิธีส่งซอร์ส PHP เดิมมาให้ตรวจ (แทนการเข้า FTP)
 
 ## ทำไมใช้ FTP จากที่นี่ไม่ได้
@@ -30,16 +32,9 @@ curl              → (56) response reading failed
 1. สร้าง repo **private** ของคุณเอง แล้ว push โค้ด PHP ขึ้นไป
 2. แจ้ง URL มาในแชท (ต้องเป็น repo ที่บัญชี GitHub ที่เชื่อมกับ Arena เข้าถึงได้)
 
-### ทางเลือก C — commit เข้า repo นี้โดยตรง
+### ก่อนนำซอร์สขึ้น Git
 
-```bash
-# บนเครื่องของคุณ
-git clone https://github.com/ProAke/lcb-office-crm.git
-cd lcb-office-crm
-mkdir -p incoming && cd incoming
-unzip ~/Downloads/public_html.zip -d php-source
-cd ../.. && git add incoming && git commit -m "add legacy PHP source" && git push
-```
+ตรวจและลบ credentials, token และข้อมูลส่วนบุคคลก่อนเสมอ ห้าม commit backup หรือซอร์สที่ยังไม่ได้ตรวจลง repository
 
 ## ต้องส่งอะไรมาบ้าง
 
