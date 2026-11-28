@@ -16,6 +16,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
+  if (process.env.NODE_ENV === "production") return NextResponse.json({ error: "real channel insights are not implemented" }, { status: 501 });
+
   let synced = 0;
   for (const post of listPosts()) {
     if (post.channels.some((c) => c.status === "published")) {
@@ -24,5 +26,5 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  return NextResponse.json({ ok: true, synced, at: new Date().toISOString() });
+  return NextResponse.json({ ok: true, demo: true, synced, at: new Date().toISOString() });
 }

@@ -16,17 +16,21 @@ npm run dev     # http://localhost:3000  (เดโม: admin / admin)
 | `/dashboard` | Cockpit | KPI, กราฟรายได้ 6 เดือน, คิววันนี้, งานในศูนย์, โปรที่วิ่งอยู่, เตือนสต็อก/แชท |
 | `/customers` | CRM | ค้นหา/กรอง tier, ฟอร์มลูกค้าใหม่, หน้า 360° (`/customers/[id]`) รวมรถ ยอดสะสม งาน การจอง |
 | `/products` | สินค้า & บริการ | คลังยาง/ล้อ + บริการศูนย์, กำไรขั้นต้น %, เติม/ตัดสต็อก, เตือนต่ำกว่าจุดสั่งซื้อ |
-| `/promotions` | โปรโมชันรายเดือน | สร้าง/เปิด/ปิดโปร, ผูกช่องทาง, กดเผยแพร่ทุกช่องทางจากการ์ดโปร |
+| `/promotions` | โปรโมชันรายเดือน | สร้าง/เปิด/ปิดโปร, ผูกช่องทาง, สร้างร่างโพสต์จากการ์ดโปร (ยังไม่ส่งอัตโนมัติ) |
 | `/service` | ศูนย์บริการ | ปฏิทินนัดหมาย (รวมคิวที่ AI จอง), Kanban ใบงาน 6 ชั้น, ตัดสต็อก+บันทึกยอดลูกค้าเมื่อส่งมอบ |
 | `/chat` | AI ตอบแชท | Inbox รวม LINE/Facebook/Web, AI Auto-reply, ปุ่มให้ AI ตอบ, เจ้าหน้าที่แทรกได้ |
-| `/publish` | Publishing Hub | เขียนครั้งเดียวกระจาย LINE Broadcast / Facebook / เว็บ + ปุ่มจำลองยอด reach/clicks |
+| `/publish` | Publishing Hub | ส่ง LINE Broadcast / Facebook เมื่อ admin ยืนยันและตั้ง token; หน้าเว็บยังไม่เชื่อม, สถิติเป็นเดโม |
 | `/line-rich-menu` | LINE Rich Menu | อ่านรายการจาก LINE, สร้างเมนูพร้อมอัปโหลดภาพ, ตั้งเมนูหลัก และลบเมนู (เฉพาะผู้ดูแลระบบ) |
 | `/plan` | แผนระบบ | สถานะและขั้นตอนเปิดใช้งาน Next.js |
 
 ## API
 
 - `POST /api/webhooks/line` — LINE Messaging API webhook: รับข้อความเข้ากล่องกลาง, ตอบด้วย AI อัตโนมัติเมื่อเปิด AI Auto
-- `GET /api/cron/sync` — จำลองการซิงก์ metrics (ต้องตั้ง `CRON_SECRET`; ยังไม่ดึงข้อมูลจริง และยังไม่มี scheduler)
+- `GET /api/cron/sync` — จำลอง metrics เฉพาะ development (ต้องตั้ง `CRON_SECRET`); production ตอบ 501 จนกว่าจะเชื่อมข้อมูลจริง
+
+## ตรวจสอบช่องทาง
+
+ผู้ดูแลสามารถกดทดสอบ LINE/Facebook แบบอ่านอย่างเดียวในหน้า `/settings` โดยไม่เปิดเผย token; หน้าเว็บยังไม่รองรับการบันทึก token และการตรวจสำเร็จไม่ยืนยันการส่งหรือ webhook ดู [ข้อจำกัดการเผยแพร่](../docs/channel-connection-and-publishing.md)
 
 ## ตั้งค่า LINE Rich Menu
 

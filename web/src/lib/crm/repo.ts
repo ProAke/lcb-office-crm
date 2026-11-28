@@ -414,25 +414,20 @@ export function createPost(input: {
   return post;
 }
 
-/**
- * "เผยแพร่ทุกช่องทาง" — ยิงไปยัง LINE Broadcast / Facebook Graph / เว็บ
- * ถ้าตั้งค่า token แล้วจะเรียก API จริง (ดู lib/channels.ts); ไม่มี token → เดโมสำเร็จ
- */
-export function markPostPublished(id: number): void {
+/** บันทึกผลแยกช่องทาง: published หมายถึง API รับคำขอ ไม่ใช่ยืนยันการส่งถึงลูกค้า */
+export function setPostChannelResult(id: number, channel: ChannelName, ok: boolean, note: string, uncertain = false): void {
   const store = readStore();
-  const post = store.posts.find((p) => p.id === id);
-  if (!post) return;
-  for (const ch of post.channels) {
-    if (ch.status === "pending") {
-      ch.status = "published";
-      ch.publishedAt = now();
-    }
-  }
+  const entry = store.posts.find((p) => p.id === id)?.channels.find((c) => c.name === channel);
+  if (!entry || entry.status !== "pending") return;
+  entry.status = ok ? "published" : uncertain ? "unknown" : "failed";
+  entry.resultNote = note;
+  if (ok) entry.publishedAt = now();
   writeStore(store);
 }
 
 /** "ดึงข้อมูลกลับ" — sync ยอด reach/clicks จากแต่ละช่องทางกลับเข้าระบบ */
 export function syncPostMetrics(id: number): ChannelPost | null {
+  if (process.env.NODE_ENV === "production") return null; // ห้ามสร้างสถิติสุ่มใน production
   const store = readStore();
   const post = store.posts.find((p) => p.id === id);
   if (!post) return null;
