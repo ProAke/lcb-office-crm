@@ -10,7 +10,8 @@ import {
   listLowStock,
   listPromotions,
 } from "@/lib/crm/repo";
-import { baht } from "@/lib/format";
+import { baht, thDate } from "@/lib/format";
+import { bangkokDate, cockpitBookings } from "@/lib/cockpit";
 
 export const metadata: Metadata = { title: "Cockpit — แดชบอร์ดกลาง" };
 export const dynamic = "force-dynamic";
@@ -25,11 +26,12 @@ const JOB_STATUS: Record<string, string> = {
 };
 
 function BarChart({ data }: { data: { month: string; revenue: number }[] }) {
-  const max = Math.max(...data.map((d) => d.revenue));
+  const max = Math.max(0, ...data.map((d) => d.revenue));
+  if (!data.length) return <p className="py-12 text-center text-sm text-muted">ไม่มีข้อมูลรายได้เดโม</p>;
   return (
     <div className="flex h-44 items-end gap-3 px-1">
       {data.map((d) => {
-        const h = Math.max(6, Math.round((d.revenue / max) * 100));
+        const h = max > 0 ? Math.max(0, Math.round((d.revenue / max) * 100)) : 0;
         const isCurrent = d.month === data[data.length - 1]?.month;
         return (
           <div key={d.month} className="group flex flex-1 flex-col items-center gap-1.5">
@@ -57,7 +59,8 @@ export default async function DashboardPage() {
   const session = await getSession();
   const s = getCockpitSummary();
   const stats = getMonthlyStats();
-  const bookings = listBookings().filter((b) => b.status !== "cancelled" && b.status !== "done");
+  const today = bangkokDate();
+  const bookings = cockpitBookings(listBookings(), today);
   const jobs = listJobs().filter((j) => j.status !== "delivered");
   const promos = listPromotions().filter((p) => p.status === "active");
   const lowStock = listLowStock();
@@ -65,9 +68,9 @@ export default async function DashboardPage() {
 
   const kpis = [
     { label: "ลูกค้าทั้งหมด", value: String(s.customers), sub: `VIP ${s.vipCustomers} ราย`, href: "/customers" },
-    { label: "รายได้เดือนนี้", value: baht(s.monthRevenue), sub: "จากงานศูนย์บริการ+ขายยาง", href: "/service" },
-    { label: "คิวจองวันนี้", value: String(s.todayBookingCount), sub: `งานเปิดอยู่ ${s.openJobCount} ใบ`, href: "/service" },
-    { label: "โปรที่กำลังวิ่ง", value: String(s.activePromoCount), sub: "เผยแพร่ทุกช่องทาง", href: "/promotions" },
+    { label: "รายได้เดโมล่าสุด", value: baht(stats.at(-1)?.revenue ?? 0), sub: stats.at(-1)?.month ?? "ไม่มีข้อมูล", href: "/service" },
+    { label: "คิวจองวันนี้", value: String(bookings.today.length), sub: `งานเปิดอยู่ ${s.openJobCount} ใบ`, href: "/service" },
+    { label: "โปรที่กำลังวิ่ง", value: String(s.activePromoCount), sub: "สถานะโปรในข้อมูลเดโม", href: "/promotions" },
   ];
 
   return (
@@ -84,9 +87,16 @@ export default async function DashboardPage() {
         </div>
         <span className="flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-300 ring-1 ring-emerald-500/30">
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-          AI Chat เปิดอยู่ {s.aiConversations} ห้อง · ข้อความค้าง {s.unreadChats}
+          ตั้งค่าตอบอัตโนมัติ {s.aiConversations} ห้อง · ข้อความค้าง {s.unreadChats} (เดโม)
         </span>
       </div>
+
+      <div role="status" className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm leading-relaxed text-amber-950"><strong>ข้อมูลเดโมเท่านั้น — ยังไม่พร้อมให้บริการจริง:</strong> CRM ยังไม่เชื่อม MySQL หรือบัญชีจริง การตั้ง DATABASE_URL อย่างเดียวไม่เปลี่ยนแหล่งข้อมูล และตัวเลขในหน้านี้ไม่ใช่ข้อมูลร้านจริง</div>
+
+      <section className="card p-5" aria-labelledby="daily-work">
+        <div className="flex flex-wrap items-start justify-between gap-2"><div><h2 id="daily-work" className="font-semibold text-slate-900">ภาพรวมงานเปิด–ปิดร้าน</h2><p className="mt-1 text-xs text-muted">{thDate(today)} · วันตามเวลาไทย · ลิงก์สำหรับตรวจงาน ไม่ใช่การบันทึกส่งเวร</p></div><Link href="/service" className="text-sm font-semibold text-brand-700 hover:underline">ไปศูนย์บริการ →</Link></div>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2"><div className="rounded-xl bg-slate-50 p-4"><h3 className="text-sm font-semibold">เริ่มวัน · ตรวจคิวและความพร้อม</h3><p className="mt-2 text-sm text-slate-600">คิวเปิดวันนี้ {bookings.today.length} ราย · คิวค้างก่อนวันนี้ {bookings.overdue.length} ราย</p><div className="mt-2 flex gap-4 text-xs font-semibold text-brand-700"><Link href="/service">ตรวจคิว →</Link><Link href="/products">ตรวจสต็อก →</Link></div></div><div className="rounded-xl bg-slate-50 p-4"><h3 className="text-sm font-semibold">สิ้นวัน · ตรวจงานค้างและข้อความ</h3><p className="mt-2 text-sm text-slate-600">งานยังไม่ส่งมอบ {jobs.length} ใบ · ข้อความยังไม่อ่าน {s.unreadChats} ข้อความ</p><div className="mt-2 flex gap-4 text-xs font-semibold text-brand-700"><Link href="/service">ตรวจใบงาน →</Link><Link href="/chat">ตรวจแชท →</Link></div></div></div>
+      </section>
 
       {/* KPI */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -103,9 +113,9 @@ export default async function DashboardPage() {
         {/* รายได้ */}
         <section className="card overflow-hidden">
           <header className="flex items-center justify-between border-b border-line px-4 py-3">
-            <h2 className="text-sm font-semibold">รายได้ 6 เดือนล่าสุด</h2>
+            <h2 className="text-sm font-semibold">รายได้ย้อนหลัง · ข้อมูลเดโม</h2>
             <span className="rounded-full bg-brand-500/10 px-2 py-0.5 text-[11px] font-medium text-brand-700">
-              +{(stats.at(-1)!.revenue / 1000).toFixed(0)}k เดือนนี้
+              {stats.at(-1)?.month ?? "ไม่มีข้อมูล"}
             </span>
           </header>
           <div className="p-4">
@@ -116,13 +126,13 @@ export default async function DashboardPage() {
         {/* คิววันนี้ */}
         <section className="card overflow-hidden">
           <header className="flex items-center justify-between border-b border-line px-4 py-3">
-            <h2 className="text-sm font-semibold">คิวจองที่กำลังจะมาถึง</h2>
+            <h2 className="text-sm font-semibold">คิวเปิดวันนี้ · เวลาไทย</h2>
             <Link href="/service" className="text-xs font-medium text-brand-600 hover:underline">
               จัดการทั้งหมด
             </Link>
           </header>
           <ul className="max-h-56 divide-y divide-line overflow-y-auto text-sm">
-            {bookings.slice(0, 5).map((b) => (
+            {bookings.today.slice(0, 5).map((b) => (
               <li key={b.id} className="flex items-center gap-3 px-4 py-2.5">
                 <span className="grid h-9 w-12 shrink-0 place-items-center rounded-lg bg-brand-500/10 text-[11px] font-semibold text-brand-700">
                   {b.time}
@@ -144,10 +154,11 @@ export default async function DashboardPage() {
                 </span>
               </li>
             ))}
-            {!bookings.length && (
-              <li className="px-4 py-6 text-center text-xs text-muted">ยังไม่มีคิววันนี้</li>
+            {!bookings.today.length && (
+              <li className="px-4 py-6 text-center text-xs text-muted">ไม่มีคิวเปิดวันนี้</li>
             )}
           </ul>
+          <p className="border-t border-line px-4 py-3 text-xs text-muted">คิวค้างก่อนวันนี้ {bookings.overdue.length} ราย · คิววันถัดไป {bookings.upcoming.length} ราย <Link href="/service" className="font-semibold text-brand-700">ตรวจทั้งหมด →</Link></p>
         </section>
       </div>
 
@@ -178,7 +189,7 @@ export default async function DashboardPage() {
         {/* โปร */}
         <section className="card overflow-hidden">
           <header className="flex items-center justify-between border-b border-line px-4 py-3">
-            <h2 className="text-sm font-semibold">โปรโมชันเดือนนี้</h2>
+            <h2 className="text-sm font-semibold">โปรโมชันสถานะเปิด · เดโม</h2>
             <Link href="/promotions" className="text-xs font-medium text-brand-600 hover:underline">สร้างใหม่</Link>
           </header>
           <ul className="divide-y divide-line text-sm">
@@ -190,6 +201,7 @@ export default async function DashboardPage() {
                 </p>
               </li>
             ))}
+            {!promos.length && <li className="px-4 py-6 text-center text-xs text-muted">ไม่มีโปรโมชันสถานะเปิด</li>}
           </ul>
         </section>
 
@@ -221,14 +233,14 @@ export default async function DashboardPage() {
               </Link>
             ))}
             {!lowStock.length && !unreadChats.length && (
-              <p className="py-3 text-center text-xs text-muted">สต็อกปลอดภัย · ไม่มีแชทค้างอ่าน ✓</p>
+              <p className="py-3 text-center text-xs text-muted">ไม่พบสต็อกต่ำหรือแชทค้างในข้อมูลเดโม</p>
             )}
           </div>
         </section>
       </div>
 
       <p className="text-center text-[11px] text-muted">
-        โหมดเดโม: ข้อมูลเก็บในไฟล์ data/store.json — เมื่อตั้งค่า DATABASE_URL จะสลับไป MySQL ชุดเดิมอัตโนมัติ ผ่านชั้น repo.ts ไฟล์เดียว
+        ข้อมูลเดโมจาก JSON · ยังไม่เชื่อมฐานข้อมูลจริง
       </p>
     </div>
   );
