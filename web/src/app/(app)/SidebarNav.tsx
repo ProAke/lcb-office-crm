@@ -69,7 +69,7 @@ const NAV: { section: string; items: Item[] }[] = [
   {
     section: "ระบบ",
     items: [
-      { href: "/settings", label: "ตั้งค่าระบบ", icon: "M12 3v2m0 14v2M3 12h2m14 0h2M5.6 5.6l1.4 1.4m10 10 1.4 1.4M18.4 5.6 17 7M7 17l-1.4 1.4M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" },
+      { href: "/settings", label: "ศูนย์การเชื่อมต่อ", icon: "M12 3v2m0 14v2M3 12h2m14 0h2M5.6 5.6l1.4 1.4m10 10 1.4 1.4M18.4 5.6 17 7M7 17l-1.4 1.4M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" },
       { href: "/diagnostics", label: "ตรวจสอบปัญหา", icon: "M12 3l9 16H3L12 3zM12 9v4M12 16h.01" },
       {
         href: "/plan",
